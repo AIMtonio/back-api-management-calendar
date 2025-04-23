@@ -7,6 +7,7 @@ import { JwtModule } from '@nestjs/jwt';
 import { UsuarioModule } from './usuario/usuario.module';
 import { AuthModule } from './auth/auth.module';
 import { HelpersModule } from './helpers/helpers.module';
+import { EventoModule } from './evento/evento.module';
 
 @Module({
   imports: [
@@ -31,7 +32,7 @@ import { HelpersModule } from './helpers/helpers.module';
     ConfigModule.forRoot({ isGlobal: true }),
     UsuarioModule,
     AuthModule,
-    HelpersModule,
+    EventoModule,
   ],
   controllers: [AppController],
   providers: [AppService],

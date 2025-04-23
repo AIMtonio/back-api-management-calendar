@@ -12,12 +12,10 @@ export class EventoService {
   constructor(
     @InjectRepository(Evento)
     private _eventoRepository: Repository<Evento>,
-    private readonly _jwtService: JwtService,
-    private readonly eventoService: EventoService,
   ) { }
 
   create(createEventoDto: CreateEventoDto) {
-
+    const evento = this._eventoRepository.create(createEventoDto);
     return 'This action adds a new evento';
   }
 

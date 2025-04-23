@@ -6,6 +6,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Usuario } from './entities/usuario.entity';
 import { Repository } from 'typeorm';
 import { HelpersService } from 'src/helpers/helpers.service';
+import { EventoService } from 'src/evento/evento.service';
 
 @Injectable()
 export class UsuarioService {

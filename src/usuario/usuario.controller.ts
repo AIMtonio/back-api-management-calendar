@@ -31,4 +31,10 @@ export class UsuarioController {
   remove(@Param('id') id: string) {
     return this.usuarioService.remove(+id);
   }
+
+  @Get('/mensaje')
+  mostrarMensaje() {
+    return { message: '¡Hola! Este es un mensaje desde el endpoint /usuario/mensaje' };
+  }
+
 }

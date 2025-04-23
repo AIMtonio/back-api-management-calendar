@@ -3,7 +3,7 @@ import { HelpersService } from './helpers.service';
 import { HelpersController } from './helpers.controller';
 
 @Module({
-  controllers: [HelpersController],
+  //controllers: [HelpersController],
   providers: [HelpersService],
   exports: [HelpersService],
 })

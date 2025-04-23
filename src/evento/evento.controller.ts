@@ -31,4 +31,9 @@ export class EventoController {
   async remove(@Param('id') id: string) {
     return this.eventoService.remove(+id);
   }
+
+  @Post('/mensaje')
+  async mostrarMensaje() {
+    return { message: '¡Hola! Este es un mensaje desde el endpoint /evento/mensaje' };
+  }
 }

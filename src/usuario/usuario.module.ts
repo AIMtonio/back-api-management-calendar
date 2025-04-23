@@ -6,6 +6,7 @@ import { Usuario } from './entities/usuario.entity';
 import { JwtModule } from '@nestjs/jwt';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { HelpersModule } from 'src/helpers/helpers.module';
+import { EventoModule } from 'src/evento/evento.module';
 
 @Module({
   imports: [

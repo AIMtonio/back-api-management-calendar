@@ -8,7 +8,6 @@ import { CreateUsuarioDto } from '../usuario/dto/create-usuario.dto';
 export class AuthController {
   constructor(
     private readonly authService: AuthService,
-    private readonly usuarioService: UsuarioService,
   ) {}
 
   @Post('login')
