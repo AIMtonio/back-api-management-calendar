@@ -2,31 +2,33 @@ import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateCol
 
 @Entity('evento')
 export class Evento {
+  @PrimaryGeneratedColumn({ name: 'id_event' })
+  id: number;
 
-    @PrimaryGeneratedColumn({ name: 'id_event' })
-    id: number;
+  @Column({ type: 'varchar', length: 255, nullable: false })
+  name: string;
 
-    @Column({ type: 'varchar', length: 255, nullable: false })
-    name: string;
+  @Column({ type: 'text', nullable: true })
+  description: string;
 
-    @Column({ type: 'text', nullable: true })
-    description: string;
+  @Column({ type: 'varchar', length: 50, name: 'date_event', nullable: true })
+  date_event: string;
 
-    @Column({ type: 'date', name: 'date_event', nullable: false })
-    dateEvent: Date;
+  @Column({ type: 'varchar', length: 50, nullable: true })
+  status: string;
 
-    @Column({ type: 'varchar', length: 50, nullable: true })
-    status: string;
+  @Column({ type: 'char', length: 36, name: 'uuid_user', nullable: false })
+  uuid_user: string;
 
-    @Column({ type: 'char', length: 36, name: 'uuid_user', nullable: false })
-    uuidUser: string;
+  @CreateDateColumn({ name: 'create_at', type: 'datetime', precision: 6, default: () => 'CURRENT_TIMESTAMP(6)' })
+  create_at: Date;
 
-    @CreateDateColumn({ name: 'create_at', type: 'datetime' })
-    createAt: Date;
+  @Column({ type: 'varchar', length: 100, name: 'create_by', nullable: true })
+  create_by: string;
 
-    @Column({ type: 'varchar', length: 100, name: 'update_by', nullable: true })
-    updateBy: string;
+  @Column({ type: 'varchar', length: 100, name: 'update_by', nullable: true })
+  update_by: string;
 
-    @UpdateDateColumn({ name: 'update_at', type: 'datetime' })
-    updateAt: Date;
+  @UpdateDateColumn({ name: 'update_at', type: 'datetime', precision: 6, default: null, onUpdate: 'CURRENT_TIMESTAMP(6)' })
+  update_at: Date;
 }

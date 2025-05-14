@@ -1,11 +1,12 @@
 export class CreateEventoDto {
-    id_event: number;
-    name: string;
-    description?: string;
-    date_event: Date;
-    status?: string;
-    uuid_user: string;
-    create_at?: Date;
-    update_by?: string;
-    update_at?: Date;
-  }
+  id_event?: number; // Opcional porque es auto-incremental
+  name: string; // Obligatorio
+  description?: string; // Opcional
+  date_event: string; // Obligatorio
+  status?: string; // Opcional
+  uuid_user: string; // Obligatorio
+  create_at?: Date; // Opcional, manejado automáticamente
+  create_by?: string; // Opcional
+  update_by?: string; // Opcional
+  update_at?: Date; // Opcional, manejado automáticamente
+}

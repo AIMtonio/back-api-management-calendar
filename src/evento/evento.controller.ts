@@ -7,9 +7,9 @@ import { UpdateEventoDto } from './dto/update-evento.dto';
 export class EventoController {
   constructor(private readonly eventoService: EventoService) {}
 
-  @Post()
+  @Post('new')
   async create(@Body() createEventoDto: CreateEventoDto) {
-    return this.eventoService.create(createEventoDto);
+    return await this.eventoService.create(createEventoDto);
   }
 
   @Get()
@@ -32,8 +32,6 @@ export class EventoController {
     return this.eventoService.remove(+id);
   }
 
-  @Post('/mensaje')
-  async mostrarMensaje() {
-    return { message: '¡Hola! Este es un mensaje desde el endpoint /evento/mensaje' };
-  }
+
+
 }

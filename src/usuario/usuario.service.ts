@@ -26,7 +26,12 @@ export class UsuarioService {
      console.log('userExist', userExist);
 
      if (userExist) {
-       return 'Correo ya registrado';
+      return {
+        success: false,
+        message: 'Correo ya registrado',
+        //data: null,
+        timestamp: new Date().toISOString(),
+      };
      }
 
      // Generar UUID
@@ -38,16 +43,18 @@ export class UsuarioService {
      createUsuarioDto.password = null;
      createUsuarioDto.update_at = null; 
 
-     const token = await this.generateJwt(createUsuarioDto);
+     //const token = await this.generateJwt(createUsuarioDto);
      
 
     const usuario = await this.usuarioRepository.save(createUsuarioDto);
-    console.log('usuario', usuario);
 
-    
-    //const respuesta = { data: usuario, access_token: token, token_type: "bearer" };
-    //return respuesta;
-     return usuario;
+    return {
+      success: true,
+      message: 'Usuario creado con éxito',
+      data: usuario,
+      timestamp: new Date().toISOString(),
+    };
+
   }
 
   async findAll() {
@@ -56,12 +63,12 @@ export class UsuarioService {
   }
 
   async findOne(id: number) {
-    const usuario = await this.usuarioRepository.findOne({ where: { id: id } });
+    const usuario = await this.usuarioRepository.findOne({ where: { id_user: id } });
     return usuario;
   }
 
   async update(id: number, updateUsuarioDto: UpdateUsuarioDto) {
-    const usuario = await this.usuarioRepository.findOne({ where: { id: id } });
+    const usuario = await this.usuarioRepository.findOne({ where: { id_user: id } });
 
     if (!usuario) {
       return 'Usuario no encontrado';
@@ -72,7 +79,7 @@ export class UsuarioService {
       return 'Error al actualizar el usuario';
     }
 
-    const updatedUsuario = await this.usuarioRepository.findOne({ where: { id: id } });
+    const updatedUsuario = await this.usuarioRepository.findOne({ where: { id_user: id } });
     if (!updatedUsuario) {
       return 'Error al actualizar el usuario';
     }
@@ -82,7 +89,7 @@ export class UsuarioService {
 
   async remove(id: number) {
 
-    const usuario = await this.usuarioRepository.findOne({ where: { id: id } });
+    const usuario = await this.usuarioRepository.findOne({ where: { id_user: id } });
     if (!usuario) {
       return 'Usuario no encontrado';
     }
@@ -105,7 +112,7 @@ export class UsuarioService {
   }
 
   async findByEmailAndPassword(email: string, password: string) {
-    return await this.usuarioRepository.findOne({ where: { email: email, password: password, status: '1' } });
+    return await this.usuarioRepository.findOne({ where: { email: email, password: password } });
   }
 
 }
