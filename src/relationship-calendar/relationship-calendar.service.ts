@@ -6,6 +6,8 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { UsuarioService } from 'src/usuario/usuario.service';
 import { CustomCalendarService } from 'src/custom-calendar/custom-calendar.service';
 import { Repository } from 'typeorm';
+import { EventoService } from 'src/evento/evento.service';
+import { EventsRelationshipService } from 'src/events-relationship/events-relationship.service';
 
 @Injectable()
 export class RelationshipCalendarService {
@@ -15,6 +17,9 @@ export class RelationshipCalendarService {
     private _relationshipCalendarRepository: Repository<RelationshipCalendar>,
     private readonly _usuarioService: UsuarioService,
     private readonly _customCalendarService: CustomCalendarService,
+    private readonly _eventService: EventoService,
+    //private readonly _eventsRelationshipService: EventsRelationshipService
+  
   ){
 
   }
@@ -119,6 +124,115 @@ export class RelationshipCalendarService {
 
   async findByCveCalendar(cve_calendar: string) {
     return await this._customCalendarService.findByCveCalendar(cve_calendar);
+  }
+
+  async findByCustomCalendar(createRelationshipCalendarDto: CreateRelationshipCalendarDto) {
+    try {
+
+      if(createRelationshipCalendarDto.uuid_user_create === undefined || createRelationshipCalendarDto.cve_calendar === undefined){
+        return {
+          success: false,
+          message: 'Faltan datos para buscar las relaciones del calendario',
+          data: null
+        };
+      }
+
+      const relationshipCalendar = await this._relationshipCalendarRepository.find({
+        where: {
+          cve_calendar: createRelationshipCalendarDto.cve_calendar,
+          uuid_user_create: createRelationshipCalendarDto.uuid_user_create,
+          status: "1"
+        }
+      });
+
+      console.log('relationshipCalendar', createRelationshipCalendarDto);
+
+      if (!relationshipCalendar || relationshipCalendar.length === 0) {
+        return {
+          success: false,
+          message: 'No se encontraron relaciones para el calendario especificado',
+          data: null
+        };
+      }
+
+      return {
+        success: true,
+        message: 'Relaciones encontradas para el calendario',
+        data: relationshipCalendar
+      };
+
+    } catch (error) {
+      return {
+        success: false,
+        message: 'Error al buscar las relaciones del calendario',
+        data: null
+      };
+    }
+  }
+
+  async findMyEventsRelationshipByCalendar(createRelationshipCalendarDto: CreateRelationshipCalendarDto) {
+    try {
+
+      if(createRelationshipCalendarDto.uuid_user_create === undefined || createRelationshipCalendarDto.cve_calendar === undefined){
+        return {
+          success: false,
+          message: 'Faltan datos para buscar las relaciones del calendario',
+          data: null
+        };
+      }
+
+      const relationshipCalendar = await this._relationshipCalendarRepository.findOne({
+        where: {
+          cve_calendar: createRelationshipCalendarDto.cve_calendar,
+          uuid_user_create: createRelationshipCalendarDto.uuid_user_create,
+          status: "1"
+        }
+      });
+
+      if (!relationshipCalendar) {
+        return {
+          success: false,
+          message: 'No se encontraron relaciones para el calendario especificado',
+          data: null
+        };
+      }
+
+      console.log('relationshipCalendar', relationshipCalendar);
+
+      /*const relationshipCalendarEvents = await this._ev.findOne({
+        where: {
+          cve_calendar: relationshipCalendar.cve_calendar,
+          uuid_user_create: createRelationshipCalendarDto.uuid_user_create,
+          status: "1"
+        }
+      });
+
+      console.log('relationshipCalendarEvents', relationshipCalendarEvents);*/
+
+      const eventsRelationship = await this._eventService.findByCveEvent(createRelationshipCalendarDto.cve_calendar);
+      if (!eventsRelationship.success) { 
+        return {
+          success: false,
+          message: eventsRelationship.message,
+          data: null
+        };
+      }
+
+      return {
+        success: true,
+        message: 'Relaciones encontradas para el calendario',
+        data: relationshipCalendar
+      };
+
+    } catch (error) {
+      return {
+        success: false,
+        message: 'Error al buscar las relaciones del calendario',
+        data: null
+      };
+    }
+      //if(relationshipCalendar.length === 0){
+     
   }
 
 }

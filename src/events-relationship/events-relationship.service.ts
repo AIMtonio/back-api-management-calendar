@@ -19,7 +19,7 @@ export class EventsRelationshipService {
     private readonly _relationshipCalendarService: RelationshipCalendarService,
     private readonly _usuarioService: UsuarioService,
     private readonly _customCalendarService: CustomCalendarService,
-    private readonly _eventService: EventoService,
+    private readonly _eventService: EventoService
   ) {}
 
   async create(createEventsRelationshipDto: CreateEventsRelationshipDto) {

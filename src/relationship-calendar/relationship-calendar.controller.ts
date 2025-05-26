@@ -16,4 +16,10 @@ export class RelationshipCalendarController {
     return await this.relationshipCalendarService.create(createRelationshipCalendarDto);
   }
 
+  @UseGuards(JwtAuthGuard)
+  @Post('findRelationshipByCalendar')
+  async findRelationshipByCalendar(@Body() createRelationshipCalendarDto: CreateRelationshipCalendarDto) {
+    return await this.relationshipCalendarService.findMyEventsRelationshipByCalendar(createRelationshipCalendarDto);
+  }
+
 }

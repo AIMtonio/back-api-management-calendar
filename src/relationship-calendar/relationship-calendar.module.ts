@@ -7,12 +7,15 @@ import { UsuarioModule } from 'src/usuario/usuario.module';
 import { JwtModule } from '@nestjs/jwt';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { CustomCalendarModule } from 'src/custom-calendar/custom-calendar.module';
+import { EventoModule } from 'src/evento/evento.module';
+import { EventsRelationshipModule } from 'src/events-relationship/events-relationship.module';
 
 @Module({
   imports: [
         TypeOrmModule.forFeature([RelationshipCalendar]),
         UsuarioModule,
         CustomCalendarModule,
+        EventoModule,
         JwtModule.registerAsync({
           imports: [ConfigModule],
           inject: [ConfigService],

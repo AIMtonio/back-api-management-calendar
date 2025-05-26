@@ -18,9 +18,9 @@ export class CustomCalendarController {
   }
 
   @UseGuards(JwtAuthGuard)
-  @Get('findByUuidUser/:uuid_user')
-  async findByUuidUser(@Param('uuid_user') uuid_user: string) {
-    return await this.customCalendarService.findByUuidUser(uuid_user);
+  @Post('findByUuidUser')
+  async findByUuidUser(@Body() createCustomCalendarDto: CreateCustomCalendarDto) {
+    return await this.customCalendarService.findByUuidUser(createCustomCalendarDto.uuid_user);
   }
 
 }
