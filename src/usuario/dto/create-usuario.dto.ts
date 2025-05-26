@@ -1,6 +1,6 @@
 export class CreateUsuarioDto {
     id_user: number;
-    uuid: string;
+    uuid_user: string;
     username: string;
     password: string;
     status?: string;

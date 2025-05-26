@@ -6,7 +6,6 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Usuario } from './entities/usuario.entity';
 import { Repository } from 'typeorm';
 import { HelpersService } from 'src/helpers/helpers.service';
-import { EventoService } from 'src/evento/evento.service';
 
 @Injectable()
 export class UsuarioService {
@@ -22,9 +21,6 @@ export class UsuarioService {
 
      // Validar si el correo ya existe en la tabla usuarios
      const userExist = await this.findByEmail(createUsuarioDto.email);
-
-     console.log('userExist', userExist);
-
      if (userExist) {
       return {
         success: false,
@@ -36,15 +32,12 @@ export class UsuarioService {
 
      // Generar UUID
      const uuid_usuario = this._helperService.generateUUID();
-     createUsuarioDto.uuid = uuid_usuario;
+     createUsuarioDto.uuid_user = uuid_usuario;
 
      const username = createUsuarioDto.email.split('@')[0];
      createUsuarioDto.username = username;
      createUsuarioDto.password = null;
      createUsuarioDto.update_at = null; 
-
-     //const token = await this.generateJwt(createUsuarioDto);
-     
 
     const usuario = await this.usuarioRepository.save(createUsuarioDto);
 
@@ -103,7 +96,8 @@ export class UsuarioService {
   }
 
   async generateJwt(usuario: CreateUsuarioDto) {
-    const payload = { username: usuario.username, sub: usuario.uuid };
+    const payload = { username: usuario.username, sub: usuario.uuid_user
+     };
     return this._jwtService.sign(payload);
   }
 
@@ -113,6 +107,91 @@ export class UsuarioService {
 
   async findByEmailAndPassword(email: string, password: string) {
     return await this.usuarioRepository.findOne({ where: { email: email, password: password } });
+  }
+
+  async login(createUsuarioDto: CreateUsuarioDto) {
+
+    try{
+      if (!createUsuarioDto.email || !createUsuarioDto.password) {
+        return {
+          success: false,
+          message: 'Correo y contraseña son requeridos',
+          data: null
+        };
+      }
+    
+    const userExist = await this.findByEmailAndPassword(createUsuarioDto.email, createUsuarioDto.password);
+    if (!userExist) {
+      return {
+          success: false,
+          message: 'Credenciales incorrectas',
+          data: null
+        };
+    }
+
+    const usuario = await this.findStatusByUuidValidationGeneral(userExist.uuid_user)
+    if(!usuario.success){
+      return {
+        success: false,
+        message: usuario.message,
+        data: null
+      };
+    }
+
+    const token = await this.generateJwt(userExist);
+    return {
+      success: true,
+      message: 'Login successful',
+      data: token,
+      uuid_user: userExist.uuid_user
+    };
+    
+    }catch (error) {
+      console.error('Error in login:', error);
+    }
+    
+  }
+
+  async findStatusByUuidValidationGeneral(uuid: string) {
+
+    try {
+
+      if (!uuid) {
+        return {
+          success: false,
+          message: 'El uuid es obligatorio',
+          data: null
+        };
+      }
+    
+      const usuario = await this.usuarioRepository.findOne({ where: { uuid_user: uuid } });
+
+      if (!usuario) {
+        return {
+          success: false,
+          message: 'Usuario no encontrado',
+          timestamp: new Date().toISOString(),
+        };
+      }
+      
+      if (usuario.status != '1') {
+        return {
+          success: false,
+          message: 'Usuario inactivo',
+          timestamp: new Date().toISOString(),
+        };
+      }
+      
+      return {
+          success: true,
+          message: 'Validacion correcta',
+          data: usuario,
+          timestamp: new Date().toISOString(),
+        }; 
+
+    }catch (error) {
+      console.error('Error in findStatusByUuid:', error);
+    }
   }
 
 }

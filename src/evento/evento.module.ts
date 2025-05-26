@@ -5,10 +5,12 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { Evento } from './entities/evento.entity';
 import { JwtModule } from '@nestjs/jwt';
 import { ConfigModule, ConfigService } from '@nestjs/config';
+import { UsuarioModule } from 'src/usuario/usuario.module';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([Evento]),
+    UsuarioModule,
     JwtModule.registerAsync({
       imports: [ConfigModule],
       inject: [ConfigService],

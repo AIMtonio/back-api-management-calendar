@@ -1,12 +1,17 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards } from '@nestjs/common';
 import { EventoService } from './evento.service';
 import { CreateEventoDto } from './dto/create-evento.dto';
 import { UpdateEventoDto } from './dto/update-evento.dto';
+import { JwtAuthGuard } from 'src/guards/JwtAuthGuard';
 
 @Controller('evento')
 export class EventoController {
-  constructor(private readonly eventoService: EventoService) {}
 
+  constructor(
+    private readonly eventoService: EventoService
+  ) {}
+
+  @UseGuards(JwtAuthGuard)
   @Post('new')
   async create(@Body() createEventoDto: CreateEventoDto) {
     return await this.eventoService.create(createEventoDto);
@@ -14,22 +19,13 @@ export class EventoController {
 
   @Get()
   async findAll() {
-    return this.eventoService.findAll();
+    return await this.eventoService.findAll();
   }
 
-  @Get(':id')
-  async findOne(@Param('id') id: string) {
-    return this.eventoService.findOne(+id);
-  }
-
-  @Patch(':id')
-  async update(@Param('id') id: string, @Body() updateEventoDto: UpdateEventoDto) {
-    return this.eventoService.update(+id, updateEventoDto);
-  }
-
-  @Delete(':id')
-  async remove(@Param('id') id: string) {
-    return this.eventoService.remove(+id);
+  @UseGuards(JwtAuthGuard)
+  @Post('findMyEvents')
+  async findByClient(@Body() createEventoDto: CreateEventoDto) {
+    return await this.eventoService.findByClient(createEventoDto);
   }
 
 

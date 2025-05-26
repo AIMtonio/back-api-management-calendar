@@ -4,6 +4,7 @@ import { UpdateEventoDto } from './dto/update-evento.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Evento } from './entities/evento.entity';
 import { Repository } from 'typeorm';
+import { UsuarioService } from 'src/usuario/usuario.service';
 //import { JwtService } from '@nestjs/jwt';
 
 @Injectable()
@@ -12,16 +13,28 @@ export class EventoService {
   constructor(
     @InjectRepository(Evento)
     private _eventoRepository: Repository<Evento>,
+    private readonly _usuarioService: UsuarioService,
   ) { }
 
   async create(createEventoDto: CreateEventoDto) {
-
     try {
 
-      if (!createEventoDto.date_event) {
+      const usuario = await this._usuarioService.findStatusByUuidValidationGeneral(createEventoDto.uuid_user);
+      if(!usuario.success){
         return {
           success: false,
-          message: 'La fecha del evento es obligatoria',
+          message: usuario.message,
+          data: null
+        };
+      }
+
+      createEventoDto.cve_event = this.generateEventCode();
+
+      const eventoExist = await this.findByEventNameAndUUIDUser(createEventoDto.name, createEventoDto.uuid_user);
+      if(!eventoExist.success){
+        return {
+          success: false,
+          message: eventoExist.message,
           data: null
         };
       }
@@ -45,19 +58,135 @@ export class EventoService {
     };
   }
 
-  findAll() {
-    return `This action returns all evento`;
+  async findAll() {
+    try {
+      const eventos = await this._eventoRepository.find();
+      if (!eventos) {
+        return {
+          success: false,
+          message: 'No se encontraron eventos',
+          data: null
+        };
+      }
+      return {
+        success: true,
+        message: 'Eventos encontrados',
+        data: eventos
+      };
+    } catch (error) {
+      console.error('Error finding eventos:', error);
+    }
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} evento`;
+  async findByClient(createEventoDto: CreateEventoDto) {
+    try {
+
+      if (!createEventoDto.uuid_user) {
+        return {
+          success: false,
+          message: 'El usuario es obligatorio',
+          data: null
+        };
+      }
+
+      const usuario = await this._usuarioService.findStatusByUuidValidationGeneral(createEventoDto.uuid_user);
+      if(!usuario.success){
+        return {
+          success: false,
+          message: usuario.message,
+          data: null
+        };
+      }
+
+      const eventos = await this._eventoRepository.find({ where: { uuid_user: createEventoDto.uuid_user } });
+      if (!eventos.length) {
+        return {
+          success: false,
+          message: 'No se encontraron eventos',
+          data: null
+        };
+      }
+
+      return {
+        success: true,
+        message: 'Eventos encontrados',
+        data: eventos
+      };
+
+    } catch (error) {
+      console.error('Error finding eventos:', error);
+    }
   }
 
-  update(id: number, updateEventoDto: UpdateEventoDto) {
-    return `This action updates a #${id} evento`;
+  generateEventCode(): string {
+      const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+      let result = '';
+      for (let i = 0; i < 10; i++) {
+        result += characters.charAt(Math.floor(Math.random() * characters.length));
+      }
+      return result;
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} evento`;
+  async findByCveEvent(cve_event: string) {
+    try {
+
+      if(!cve_event){
+        return {
+          success: false,
+          message: 'El cve_event es requerido',
+          data: null
+        };
+      }
+
+      const evento = await this._eventoRepository.findOne({ where: { cve_event } });
+      if (!evento) {
+        return {
+          success: false,
+          message: 'No se encontró el evento',
+          data: null
+        };
+      }
+
+      return {
+        success: true,
+        message: 'Evento encontrado',
+        data: evento
+      };
+
+    } catch (error) {
+      console.error('Error finding evento:', error);
+    }
   }
+
+  async findByEventNameAndUUIDUser(event_name: string, uuid_user: string) {
+    try {
+
+      if(!event_name){
+        return {
+          success: false,
+          message: 'El nombre del evento es requerido',
+          data: null
+        };
+      }
+
+      const evento = await this._eventoRepository.findOne({ where: { name: event_name, uuid_user:  uuid_user} });
+      if (evento) {
+        return {
+          success: false,
+          message: 'Ya existe un evento con ese nombre asignado a este usuario',
+          data: null
+        };
+      }
+
+      return {
+        success: true,
+        message: 'Es posible crear el evento con ese nombre',
+        data: evento
+      };
+
+    } catch (error) {
+      console.error('Error finding evento by name:', error);
+    }
+  }
+  
 }

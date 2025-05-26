@@ -6,7 +6,7 @@ export class Usuario {
   id_user: number;
 
   @Column({ type: 'char', length: 36, nullable: false })
-  uuid: string;
+  uuid_user: string;
 
   @Column({ type: 'varchar', length: 255, nullable: false })
   username: string;
@@ -14,7 +14,7 @@ export class Usuario {
   @Column({ type: 'varchar', length: 255, nullable: true })
   password: string;
 
-  @Column({ type: 'varchar', length: 50, nullable: true })
+  @Column({ type: 'varchar', length: 2, default: '2', nullable: true })
   status: string;
 
   @Column({ type: 'varchar', length: 255, nullable: false })
@@ -29,15 +29,15 @@ export class Usuario {
   @Column({ type: 'varchar', length: 100, nullable: false })
   lastname: string;
 
-  @Column({ type: 'varchar', length: 100, name: 'create_by', default: 'system' })
-  createBy: string;
+  @Column({ type: 'varchar', length: 100, name: 'create_by', default: 'admin' })
+  create_by: string;
 
   @CreateDateColumn({ name: 'create_at', type: 'datetime' })
-  createAt: Date;
+  create_at: Date;
 
   @Column({ type: 'varchar', length: 100, name: 'update_by', nullable: true })
-  updateBy: string;
+  update_by: string;
 
   @UpdateDateColumn({ name: 'update_at', type: 'datetime' })
-  updateAt: Date;
+  update_at: Date;
 }

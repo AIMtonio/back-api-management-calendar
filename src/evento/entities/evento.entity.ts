@@ -3,7 +3,10 @@ import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateCol
 @Entity('evento')
 export class Evento {
   @PrimaryGeneratedColumn({ name: 'id_event' })
-  id: number;
+  id_event: number;
+
+  @Column({ name: 'cve_event', type: 'varchar', length: 10, nullable: true })
+  cve_event: string;
 
   @Column({ type: 'varchar', length: 255, nullable: false })
   name: string;
@@ -14,7 +17,7 @@ export class Evento {
   @Column({ type: 'varchar', length: 50, name: 'date_event', nullable: true })
   date_event: string;
 
-  @Column({ type: 'varchar', length: 50, nullable: true })
+  @Column({ type: 'varchar', length: 50, default: 1, nullable: true })
   status: string;
 
   @Column({ type: 'char', length: 36, name: 'uuid_user', nullable: false })
@@ -23,7 +26,7 @@ export class Evento {
   @CreateDateColumn({ name: 'create_at', type: 'datetime', precision: 6, default: () => 'CURRENT_TIMESTAMP(6)' })
   create_at: Date;
 
-  @Column({ type: 'varchar', length: 100, name: 'create_by', nullable: true })
+  @Column({ type: 'varchar', length: 100, name: 'create_by', default: 'admin', nullable: true })
   create_by: string;
 
   @Column({ type: 'varchar', length: 100, name: 'update_by', nullable: true })

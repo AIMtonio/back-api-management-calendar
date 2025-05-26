@@ -1,5 +1,6 @@
 export class CreateEventoDto {
   id_event?: number; // Opcional porque es auto-incremental
+  cve_event?: string; // Opcional, puede ser generado automáticamente
   name: string; // Obligatorio
   description?: string; // Opcional
   date_event: string; // Obligatorio

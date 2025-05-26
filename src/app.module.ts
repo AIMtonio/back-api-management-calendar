@@ -8,6 +8,9 @@ import { UsuarioModule } from './usuario/usuario.module';
 import { AuthModule } from './auth/auth.module';
 import { HelpersModule } from './helpers/helpers.module';
 import { EventoModule } from './evento/evento.module';
+import { CustomCalendarModule } from './custom-calendar/custom-calendar.module';
+import { RelationshipCalendarModule } from './relationship-calendar/relationship-calendar.module';
+import { EventsRelationshipModule } from './events-relationship/events-relationship.module';
 
 @Module({
   imports: [
@@ -33,6 +36,9 @@ import { EventoModule } from './evento/evento.module';
     UsuarioModule,
     AuthModule,
     EventoModule,
+    CustomCalendarModule,
+    RelationshipCalendarModule,
+    EventsRelationshipModule,
   ],
   controllers: [AppController],
   providers: [AppService],
