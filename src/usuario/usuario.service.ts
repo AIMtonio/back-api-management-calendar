@@ -29,8 +29,7 @@ export class UsuarioService {
         timestamp: new Date().toISOString(),
       };
      }
-
-     // Generar UUID
+     
      const uuid_usuario = this._helperService.generateUUID();
      createUsuarioDto.uuid_user = uuid_usuario;
 

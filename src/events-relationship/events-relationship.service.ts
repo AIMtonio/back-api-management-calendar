@@ -23,12 +23,7 @@ export class EventsRelationshipService {
   ) {}
 
   async create(createEventsRelationshipDto: CreateEventsRelationshipDto) {
-
     try{
-
-      console.log('createEventsRelationshipDto', createEventsRelationshipDto);
-
-      //validar si el cve_calendar existe 
       const calendarExist = await this._customCalendarService.findByCveCalendar(createEventsRelationshipDto.cve_calendar);
       if(!calendarExist.success) {
         return {
@@ -39,8 +34,6 @@ export class EventsRelationshipService {
       }
 
       const eventExist = await this._eventService.findByCveEvent(createEventsRelationshipDto.cve_event);
-
-      console.log('eventExist', eventExist);
       if(!eventExist.success) {
         return {
           success: false,
@@ -76,17 +69,13 @@ export class EventsRelationshipService {
         data: eventCreated
       }
 
-
     }catch (error) {
-      console.log('error', error);
       return {
         success: false,
         message: 'Error al crear la relación de eventos',
         data: null
       }
     }
-  
-    return 'This action adds a new eventsRelationship';
   }
 
   async findByCveCalendarAndCveEvent(cve_calendar: string, cve_event: string) {

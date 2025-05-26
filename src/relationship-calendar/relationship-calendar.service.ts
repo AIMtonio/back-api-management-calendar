@@ -20,10 +20,7 @@ export class RelationshipCalendarService {
   }
 
   async create(createRelationshipCalendarDto: CreateRelationshipCalendarDto) {
-
     try {
-
-      console.log('createRelationshipCalendarDto', createRelationshipCalendarDto);
 
       const userCreateExist = await this._usuarioService.findStatusByUuidValidationGeneral(createRelationshipCalendarDto.uuid_user_create);
       if (!userCreateExist.success) {
@@ -66,8 +63,13 @@ export class RelationshipCalendarService {
       }
 
       const createRelationshipCalendar = await this._relationshipCalendarRepository.save(createRelationshipCalendarDto);
-      console.log('createRelationshipCalendar', createRelationshipCalendar);
-
+      if (!createRelationshipCalendar) {
+        return {
+          success: false,
+          message: 'Error al crear la relación entre el calendario y el usuario',
+          data: null
+        }
+      }
 
       return {
         success: true,
@@ -82,24 +84,6 @@ export class RelationshipCalendarService {
         data: null
       }
     }
-
-    //return 'This action adds a new relationshipCalendar';
-  }
-
-  findAll() {
-    return `This action returns all relationshipCalendar`;
-  }
-
-  findOne(id: number) {
-    return `This action returns a #${id} relationshipCalendar`;
-  }
-
-  update(id: number, updateRelationshipCalendarDto: UpdateRelationshipCalendarDto) {
-    return `This action updates a #${id} relationshipCalendar`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} relationshipCalendar`;
   }
 
   async findByCveCalendarAndUuidUser(cve_calendar: string, uuidUserCreate: string) {
@@ -136,6 +120,5 @@ export class RelationshipCalendarService {
   async findByCveCalendar(cve_calendar: string) {
     return await this._customCalendarService.findByCveCalendar(cve_calendar);
   }
-  
 
 }

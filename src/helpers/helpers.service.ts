@@ -26,7 +26,6 @@ export class HelpersService {
   }
 
   public generateUUID(): string {
-    console.log('Generando UUID');
       return uuidv4();
   }
 
