@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { forwardRef, Module } from '@nestjs/common';
 import { RelationshipCalendarService } from './relationship-calendar.service';
 import { RelationshipCalendarController } from './relationship-calendar.controller';
 import { RelationshipCalendar } from './entities/relationship-calendar.entity';
@@ -16,6 +16,7 @@ import { EventsRelationshipModule } from 'src/events-relationship/events-relatio
         UsuarioModule,
         CustomCalendarModule,
         EventoModule,
+        forwardRef(() => EventsRelationshipModule),
         JwtModule.registerAsync({
           imports: [ConfigModule],
           inject: [ConfigService],

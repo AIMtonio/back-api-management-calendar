@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { forwardRef, Inject, Injectable } from '@nestjs/common';
 import { CreateEventsRelationshipDto } from './dto/create-events-relationship.dto';
 import { UpdateEventsRelationshipDto } from './dto/update-events-relationship.dto';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -16,10 +16,11 @@ export class EventsRelationshipService {
   constructor(
     @InjectRepository(EventsRelationship)
     private _eventsRelationshipRepository: Repository<EventsRelationship>,
-    private readonly _relationshipCalendarService: RelationshipCalendarService,
     private readonly _usuarioService: UsuarioService,
     private readonly _customCalendarService: CustomCalendarService,
-    private readonly _eventService: EventoService
+    private readonly _eventService: EventoService,
+    @Inject(forwardRef(() => RelationshipCalendarService)) // Usa forwardRef aquí
+    private readonly _relationshipCalendarService: RelationshipCalendarService,
   ) {}
 
   async create(createEventsRelationshipDto: CreateEventsRelationshipDto) {
@@ -108,6 +109,41 @@ export class EventsRelationshipService {
         message: 'Error al buscar la relación de eventos',
         data: null
       }
+    }
+  }
+
+  async findEventNameByCveCalendar(cve_calendar: string) {
+    try {
+      const eventRelationships = await this._eventsRelationshipRepository.find({
+        where: { cve_calendar: cve_calendar }
+      });
+
+      if (eventRelationships.length === 0) {
+        return {
+          success: false,
+          message: 'No se encontraron eventos para el calendario especificado',
+          data: null
+        };
+      }
+
+      const eventNames = eventRelationships.map(eventRel => eventRel.cve_event);
+
+      const eventsData = await this._eventService.findByCveEvents(eventNames);
+
+      return eventsData.data;
+
+      return {
+        success: true,
+        message: 'Eventos encontrados',
+        data: eventsData
+      };
+    } catch (error) {
+      console.error('Error finding event names:', error);
+      return {
+        success: false,
+        message: 'Error al buscar los nombres de los eventos',
+        data: null
+      };
     }
   }
   

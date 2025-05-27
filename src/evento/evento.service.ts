@@ -3,7 +3,7 @@ import { CreateEventoDto } from './dto/create-evento.dto';
 import { UpdateEventoDto } from './dto/update-evento.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Evento } from './entities/evento.entity';
-import { Repository } from 'typeorm';
+import { In, Repository } from 'typeorm';
 import { UsuarioService } from 'src/usuario/usuario.service';
 //import { JwtService } from '@nestjs/jwt';
 
@@ -186,6 +186,46 @@ export class EventoService {
 
     } catch (error) {
       console.error('Error finding evento by name:', error);
+    }
+  }
+
+  async findByCveEvents(cve_events: string[]) {
+    try {
+      if (!cve_events || !cve_events.length) {
+        return {
+          success: false,
+          message: 'El arreglo de cve_event es requerido y no puede estar vacío',
+          data: null
+        };
+      }
+
+      const eventos = await this._eventoRepository.find({
+        where: {
+          cve_event: In(cve_events), // Utiliza la cláusula IN para buscar múltiples valores
+        },
+      });
+
+      if (!eventos.length) {
+        return {
+          success: false,
+          message: 'No se encontraron eventos con los cve_event proporcionados',
+          data: null
+        };
+      }
+
+      return {
+        success: true,
+        message: 'Eventos encontrados',
+        data: eventos
+      };
+
+    } catch (error) {
+      console.error('Error finding eventos by cve_events:', error);
+      return {
+        success: false,
+        message: 'Error al buscar los eventos',
+        data: null
+      };
     }
   }
   

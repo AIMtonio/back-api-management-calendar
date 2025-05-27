@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { forwardRef, Inject, Injectable } from '@nestjs/common';
 import { CreateRelationshipCalendarDto } from './dto/create-relationship-calendar.dto';
 import { UpdateRelationshipCalendarDto } from './dto/update-relationship-calendar.dto';
 import { RelationshipCalendar } from './entities/relationship-calendar.entity';
@@ -18,8 +18,8 @@ export class RelationshipCalendarService {
     private readonly _usuarioService: UsuarioService,
     private readonly _customCalendarService: CustomCalendarService,
     private readonly _eventService: EventoService,
-    //private readonly _eventsRelationshipService: EventsRelationshipService
-  
+    @Inject(forwardRef(() => EventsRelationshipService)) // Usa forwardRef aquí
+    private readonly _eventsRelationshipService: EventsRelationshipService,
   ){
 
   }
@@ -145,8 +145,6 @@ export class RelationshipCalendarService {
         }
       });
 
-      console.log('relationshipCalendar', createRelationshipCalendarDto);
-
       if (!relationshipCalendar || relationshipCalendar.length === 0) {
         return {
           success: false,
@@ -197,31 +195,12 @@ export class RelationshipCalendarService {
         };
       }
 
-      console.log('relationshipCalendar', relationshipCalendar);
-
-      /*const relationshipCalendarEvents = await this._ev.findOne({
-        where: {
-          cve_calendar: relationshipCalendar.cve_calendar,
-          uuid_user_create: createRelationshipCalendarDto.uuid_user_create,
-          status: "1"
-        }
-      });
-
-      console.log('relationshipCalendarEvents', relationshipCalendarEvents);*/
-
-      const eventsRelationship = await this._eventService.findByCveEvent(createRelationshipCalendarDto.cve_calendar);
-      if (!eventsRelationship.success) { 
-        return {
-          success: false,
-          message: eventsRelationship.message,
-          data: null
-        };
-      }
+      const eventRelationship = await this._eventsRelationshipService.findEventNameByCveCalendar(createRelationshipCalendarDto.cve_calendar);
 
       return {
         success: true,
         message: 'Relaciones encontradas para el calendario',
-        data: relationshipCalendar
+        data: eventRelationship
       };
 
     } catch (error) {

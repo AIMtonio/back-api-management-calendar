@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { forwardRef, Module } from '@nestjs/common';
 import { EventsRelationshipService } from './events-relationship.service';
 import { EventsRelationshipController } from './events-relationship.controller';
 import { EventsRelationship } from './entities/events-relationship.entity';
@@ -13,10 +13,10 @@ import { EventoModule } from 'src/evento/evento.module';
 @Module({
   imports: [
         TypeOrmModule.forFeature([EventsRelationship]),
-        RelationshipCalendarModule,
         UsuarioModule,
         CustomCalendarModule,
         EventoModule,
+        forwardRef(() => RelationshipCalendarModule),
         JwtModule.registerAsync({
           imports: [ConfigModule],
           inject: [ConfigService],
@@ -29,5 +29,6 @@ import { EventoModule } from 'src/evento/evento.module';
     ],
   controllers: [EventsRelationshipController],
   providers: [EventsRelationshipService],
+  exports: [EventsRelationshipService],
 })
 export class EventsRelationshipModule {}
