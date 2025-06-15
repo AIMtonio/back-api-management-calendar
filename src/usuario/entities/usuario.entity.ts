@@ -38,6 +38,6 @@ export class Usuario {
   @Column({ type: 'varchar', length: 100, name: 'update_by', nullable: true })
   update_by: string;
 
-  @UpdateDateColumn({ name: 'update_at', type: 'datetime' })
+  @UpdateDateColumn({ name: 'update_at', type: 'datetime', nullable: true })
   update_at: Date;
 }

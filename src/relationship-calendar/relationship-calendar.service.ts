@@ -56,7 +56,8 @@ export class RelationshipCalendarService {
 
       const existRelationshipCalendar = await this.findByCveCalendarAndUuidUser(
         createRelationshipCalendarDto.cve_calendar,
-        createRelationshipCalendarDto.uuid_user_create
+        createRelationshipCalendarDto.uuid_user_create,
+        createRelationshipCalendarDto.uuid_user_relationship
       );
 
       if (!existRelationshipCalendar.success) {
@@ -91,13 +92,15 @@ export class RelationshipCalendarService {
     }
   }
 
-  async findByCveCalendarAndUuidUser(cve_calendar: string, uuidUserCreate: string) {
+  async findByCveCalendarAndUuidUser(cve_calendar: string, uuidUserCreate: string, uuidUserRelationship: string) {
     try {
       const relationshipCalendar = await this._relationshipCalendarRepository.findOne({
         where: {
-          cve_calendar: cve_calendar, uuid_user_create: uuidUserCreate
+          cve_calendar: cve_calendar, uuid_user_relationship: uuidUserRelationship//añadir validacion para cliente relacionado
         }
       });
+
+      console.log('relationshipCalendar', relationshipCalendar);
 
       if(relationshipCalendar){
         return {
@@ -212,6 +215,63 @@ export class RelationshipCalendarService {
     }
       //if(relationshipCalendar.length === 0){
      
+  }
+  
+  async findClientByCveCustomCalendar(cve_calendar: string) {
+    try {
+      const customCalendar = await this._customCalendarService.findByCveCalendar(cve_calendar);
+      if (!customCalendar.success) {
+        return {
+          success: false,
+          message: 'No se encontró el calendario personalizado',
+          data: null
+        };
+      }
+
+      const relationshipCalendar = await this._relationshipCalendarRepository.find({
+        where: {
+          cve_calendar: cve_calendar,
+          status: "1"
+        }
+      });
+
+      if (!relationshipCalendar || relationshipCalendar.length === 0) {
+        return {
+          success: false,
+          message: 'No se encontraron relaciones para el calendario especificado',
+          data: null
+        };
+      }
+
+      const users = await Promise.all(relationshipCalendar.map(async (relationship) => {
+        const user = await this._usuarioService.findByUuid(relationship.uuid_user_relationship);
+        return user;
+      }));
+
+      const usersFiltered = users.filter(user => user.success); // Filtra los usuarios que fueron encontrados exitosamente
+
+      //has una lista de los usuarios encontrados solamente mostrando el uuid_user y el email
+      const usersFiltred = usersFiltered.map(user => ({
+        uuid_user: user.data.uuid_user,
+        //concatename el nombre y apellido
+        full_name: `${user.data.name} ${user.data.lastname}`,
+        email: user.data.email
+      }));
+      console.log('Usuarios filtrados con uuid_user y email:', usersFiltred);
+
+      return {
+        success: true,
+        message: 'Relaciones encontradas para el calendario',
+        data: usersFiltred
+      };
+
+    } catch (error) {
+      return {
+        success: false,
+        message: 'Error al buscar las relaciones del calendario',
+        data: null
+      };
+    }
   }
 
 }

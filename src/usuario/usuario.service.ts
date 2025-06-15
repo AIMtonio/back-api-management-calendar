@@ -21,7 +21,18 @@ export class UsuarioService {
 
      // Validar si el correo ya existe en la tabla usuarios
      const userExist = await this.findByEmail(createUsuarioDto.email);
-     if (userExist) {
+
+     if(userExist.success) {
+       console.error('Error al buscar el usuario por correo:', userExist.message);
+       return {
+         success: false,
+         message: 'Error al buscar el usuario por correo',
+         data: null,
+         timestamp: new Date().toISOString(),
+       };
+     }
+
+     if (userExist.success) {
       return {
         success: false,
         message: 'Correo ya registrado',
@@ -138,7 +149,6 @@ export class UsuarioService {
   }
 
   async login(createUsuarioDto: CreateUsuarioDto) {
-
     try{
       if (!createUsuarioDto.email || !createUsuarioDto.password) {
         return {
@@ -219,6 +229,41 @@ export class UsuarioService {
 
     }catch (error) {
       console.error('Error in findStatusByUuid:', error);
+    }
+  }
+
+  async findByUuid(uuid: string) {
+    try {
+      if (!uuid) {
+        return {
+          success: false,
+          message: 'El uuid es obligatorio',
+          data: null
+        };
+      }
+
+      const usuario = await this.usuarioRepository.findOne({ where: { uuid_user: uuid } });
+      if (!usuario) {
+        return {
+          success: false,
+          message: 'Usuario no encontrado',
+          data: null
+        };
+      }
+
+      return {
+        success: true,
+        message: 'Usuario encontrado',
+        data: usuario
+      };
+
+    } catch (error) {
+      console.error('Error finding user by UUID:', error);
+      return {
+        success: false,
+        message: 'Error al buscar el usuario',
+        data: null
+      };
     }
   }
 
