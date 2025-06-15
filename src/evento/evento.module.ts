@@ -16,7 +16,7 @@ import { UsuarioModule } from 'src/usuario/usuario.module';
       inject: [ConfigService],
       useFactory: async (configService: ConfigService) => ({
         secret: configService.get<string>('JWT_SECRET'),
-        signOptions: { expiresIn: '1h' },
+        signOptions: { expiresIn: '8h' },
       }),
     }),
     ConfigModule.forRoot({ isGlobal: true }),
