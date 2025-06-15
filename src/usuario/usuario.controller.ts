@@ -19,4 +19,9 @@ export class UsuarioController {
     return await this.usuarioService.login(createUserDto);
   }
 
+  @Post('validateUserByCustomCalendar')
+  async validateUserByCustomCalendar(@Body() createUserDto: CreateUsuarioDto) {
+    return await this.usuarioService.findByEmail(createUserDto.email);
+  }
+
 }

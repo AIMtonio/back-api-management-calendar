@@ -101,7 +101,36 @@ export class UsuarioService {
   }
 
   async findByEmail(email: string) {
-    return await this.usuarioRepository.findOne({ where: { email: email } });
+    if (!email) {
+      return {
+          success: false,
+          message: 'Correo es requerido',
+          data: null
+        };
+    }
+
+    const usuario = await this.usuarioRepository.findOne({ where: { email: email } });
+    if (!usuario) {
+      return {
+          success: false,
+          message: 'Usuario no encontrado',
+          data: null
+        };
+    }
+
+    if (usuario.status != '1') {
+      return {
+          success: false,
+          message: 'Usuario inactivo',
+          data: null
+        };
+    }
+
+    return {
+      success: true,
+      message: 'Usuario encontrado',
+      data: usuario.uuid_user
+    };
   }
 
   async findByEmailAndPassword(email: string, password: string) {
