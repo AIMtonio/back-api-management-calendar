@@ -30,7 +30,7 @@ import { EventsRelationshipModule } from './events-relationship/events-relations
     }),
     JwtModule.register({
       secret: process.env.JWT_SECRET,
-      signOptions: { expiresIn: '1h' },
+      signOptions: { expiresIn: '8h' },
     }),
     ConfigModule.forRoot({ isGlobal: true }),
     UsuarioModule,

@@ -19,18 +19,8 @@ export class UsuarioService {
   
   async create(createUsuarioDto: CreateUsuarioDto) {
 
-     // Validar si el correo ya existe en la tabla usuarios
-     const userExist = await this.findByEmail(createUsuarioDto.email);
-
-     if(userExist.success) {
-       console.error('Error al buscar el usuario por correo:', userExist.message);
-       return {
-         success: false,
-         message: 'Error al buscar el usuario por correo',
-         data: null,
-         timestamp: new Date().toISOString(),
-       };
-     }
+    try{
+     const userExist = await this.findUserByEmail(createUsuarioDto.email);
 
      if (userExist.success) {
       return {
@@ -57,6 +47,10 @@ export class UsuarioService {
       data: usuario,
       timestamp: new Date().toISOString(),
     };
+
+    } catch (error) {
+      console.error('Error al crear el usuario:', error);
+    }
 
   }
 
@@ -111,37 +105,46 @@ export class UsuarioService {
     return this._jwtService.sign(payload);
   }
 
-  async findByEmail(email: string) {
-    if (!email) {
-      return {
-          success: false,
-          message: 'Correo es requerido',
-          data: null
-        };
-    }
+  async findUserByEmail(email: string) {
+    try{
+      if (!email) {
+        return {
+            success: false,
+            message: 'Correo es requerido',
+            data: null
+          };
+      }
 
-    const usuario = await this.usuarioRepository.findOne({ where: { email: email } });
-    if (!usuario) {
-      return {
-          success: false,
-          message: 'Usuario no encontrado',
-          data: null
-        };
-    }
+      const usuario = await this.usuarioRepository.findOne({ where: { email: email } });
+      if (!usuario) {
+        return {
+            success: false,
+            message: 'Usuario no encontrado',
+            data: null
+          };
+      }
 
-    if (usuario.status != '1') {
-      return {
-          success: false,
-          message: 'Usuario inactivo',
-          data: null
-        };
-    }
+      // if (usuario.status != '1') {
+      //   return {
+      //       success: false,
+      //       message: 'Usuario inactivo',
+      //       data: null
+      //     };
+      // }
 
-    return {
-      success: true,
-      message: 'Usuario encontrado',
-      data: usuario.uuid_user
-    };
+      return {
+        success: true,
+        message: 'Usuario encontrado',
+        data: usuario.uuid_user
+      };
+    } catch (error) {
+      console.error('Error finding user by email:', error);
+      return {
+        success: false,
+        message: 'Error al buscar el usuario por correo',
+        data: null
+      };  
+    }
   }
 
   async findByEmailAndPassword(email: string, password: string) {

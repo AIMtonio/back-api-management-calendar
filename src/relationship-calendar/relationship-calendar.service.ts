@@ -36,7 +36,27 @@ export class RelationshipCalendarService {
         }
       }
 
-      const userRelationshipExist = await this._usuarioService.findStatusByUuidValidationGeneral(createRelationshipCalendarDto.uuid_user_relationship);
+      if (createRelationshipCalendarDto.email_user_relationship === undefined || createRelationshipCalendarDto.email_user_relationship === '') {
+        return {
+          success: false,
+          message: 'El email del usuario relacionado es obligatorio',
+          data: null
+        }
+      }
+
+      const getUUIDUserRelationship = await this._usuarioService.findUserByEmail(createRelationshipCalendarDto.email_user_relationship);
+
+      if (!getUUIDUserRelationship.success) {
+        return {
+          success: false,
+          message: 'No se encontró el usuario relacionado con el email proporcionado',
+          data: null
+        }
+      }
+
+      const uuidUserRelationship = getUUIDUserRelationship.data;
+
+      const userRelationshipExist = await this._usuarioService.findStatusByUuidValidationGeneral(uuidUserRelationship);
       if (!userRelationshipExist.success) {
         return {
           success: false,
@@ -54,6 +74,8 @@ export class RelationshipCalendarService {
         }
       }
 
+
+      createRelationshipCalendarDto.uuid_user_relationship = uuidUserRelationship;
       const existRelationshipCalendar = await this.findByCveCalendarAndUuidUser(
         createRelationshipCalendarDto.cve_calendar,
         createRelationshipCalendarDto.uuid_user_create,
@@ -99,8 +121,6 @@ export class RelationshipCalendarService {
           cve_calendar: cve_calendar, uuid_user_relationship: uuidUserRelationship//añadir validacion para cliente relacionado
         }
       });
-
-      console.log('relationshipCalendar', relationshipCalendar);
 
       if(relationshipCalendar){
         return {
@@ -257,7 +277,6 @@ export class RelationshipCalendarService {
         full_name: `${user.data.name} ${user.data.lastname}`,
         email: user.data.email
       }));
-      console.log('Usuarios filtrados con uuid_user y email:', usersFiltred);
 
       return {
         success: true,

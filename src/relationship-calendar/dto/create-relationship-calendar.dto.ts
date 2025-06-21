@@ -8,4 +8,5 @@ export class CreateRelationshipCalendarDto {
   create_by?: string;
   update_by?: string;
   update_at?: Date;
+  email_user_relationship?: string;
 }

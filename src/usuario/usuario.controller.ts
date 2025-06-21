@@ -19,9 +19,10 @@ export class UsuarioController {
     return await this.usuarioService.login(createUserDto);
   }
 
+  @UseGuards(JwtAuthGuard)
   @Post('validateUserByCustomCalendar')
   async validateUserByCustomCalendar(@Body() createUserDto: CreateUsuarioDto) {
-    return await this.usuarioService.findByEmail(createUserDto.email);
+    return await this.usuarioService.findUserByEmail(createUserDto.email);
   }
 
 }
